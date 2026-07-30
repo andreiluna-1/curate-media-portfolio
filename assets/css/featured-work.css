@@ -1,0 +1,318 @@
+/* ==========================================================================
+   Featured Work — premium video showcase
+   Extends the existing dark theme + red accent (--accent-color) defined
+   in main.css. Nothing here overrides brand colors/fonts — it only adds
+   the grid, card, and player styles needed for the real video showcase.
+   ========================================================================== */
+
+.fw-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    width: 100%;
+}
+
+/* Horizontal (16:9) clips get more breathing room across two columns */
+.fw-card--horizontal {
+    grid-column: span 3;
+}
+
+@media (min-width: 992px) {
+    .fw-card--horizontal {
+        grid-column: span 2;
+    }
+}
+
+.fw-card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    border-radius: 18px;
+    padding: 14px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015));
+    border: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transition: transform 420ms cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 420ms cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 420ms ease,
+                opacity 350ms ease,
+                filter 350ms ease;
+    opacity: 0;
+    transform: translateY(28px) scale(0.98);
+}
+
+/* Scroll-reveal: JS toggles this class via IntersectionObserver */
+.fw-card.is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* Hover focal effect: the hovered/focused card pops, its siblings dim */
+.fw-card:hover,
+.fw-card.fw-focused {
+    transform: translateY(-6px) scale(1.025);
+    border-color: rgba(229, 9, 20, 0.55);
+    box-shadow: 0 30px 60px -20px rgba(0,0,0,0.65), 0 0 40px -8px rgba(229, 9, 20, 0.35);
+    z-index: 2;
+}
+
+.fw-grid.fw-has-focus .fw-card:not(.fw-focused) {
+    opacity: 0.55;
+    filter: saturate(0.7);
+}
+
+.fw-media {
+    position: relative;
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #000;
+    cursor: pointer;
+}
+
+.fw-video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Center play button shown before playback starts */
+.fw-play-overlay {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.28);
+    border: none;
+    cursor: pointer;
+    color: var(--accent-color-8, #fff);
+    font-size: 20px;
+    transition: background 300ms ease, opacity 300ms ease;
+}
+
+.fw-play-overlay i {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(229, 9, 20, 0.9);
+    box-shadow: 0 0 0 0 rgba(229, 9, 20, 0.55);
+    transition: transform 300ms ease, box-shadow 300ms ease;
+}
+
+.fw-media:hover .fw-play-overlay i {
+    transform: scale(1.08);
+    box-shadow: 0 0 24px 6px rgba(229, 9, 20, 0.45);
+}
+
+.fw-card--playing .fw-play-overlay {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Custom control bar */
+.fw-controls {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    background: linear-gradient(0deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.55) 60%, transparent 100%);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 280ms ease, transform 280ms ease;
+    color: #fff;
+}
+
+.fw-card--playing .fw-controls,
+.fw-media:hover .fw-controls,
+.fw-media:focus-within .fw-controls {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.fw-btn {
+    background: transparent;
+    border: none;
+    color: #fff;
+    width: 26px;
+    height: 26px;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 13px;
+    border-radius: 6px;
+    transition: color 200ms ease, background 200ms ease;
+}
+
+.fw-btn:hover,
+.fw-btn:focus-visible {
+    color: var(--accent-color);
+    background: rgba(255,255,255,0.08);
+}
+
+.fw-time {
+    font-family: var(--font-family-2);
+    font-size: 11px;
+    color: rgba(255,255,255,0.85);
+    flex: 0 0 auto;
+    min-width: 30px;
+    text-align: center;
+}
+
+.fw-progress,
+.fw-volume {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.25);
+    cursor: pointer;
+    outline: none;
+}
+
+.fw-progress {
+    flex: 1 1 auto;
+    min-width: 40px;
+}
+
+.fw-volume {
+    width: 56px;
+    flex: 0 0 auto;
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .fw-volume {
+        display: block;
+    }
+}
+
+.fw-progress::-webkit-slider-thumb,
+.fw-volume::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    box-shadow: 0 0 6px rgba(229,9,20,0.7);
+}
+
+.fw-progress::-moz-range-thumb,
+.fw-volume::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border: none;
+    border-radius: 50%;
+    background: var(--accent-color);
+    box-shadow: 0 0 6px rgba(229,9,20,0.7);
+}
+
+/* Meta / text block below the media */
+.fw-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 0 4px 4px;
+}
+
+.fw-meta-top {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.fw-title {
+    font-family: var(--font-family-1);
+    font-size: 22px;
+    font-weight: 400;
+    text-transform: uppercase;
+    line-height: 1.15em;
+    color: var(--primary, #fff);
+    transition: color 300ms ease;
+}
+
+.fw-card:hover .fw-title,
+.fw-card.fw-focused .fw-title {
+    color: var(--accent-color);
+}
+
+.fw-desc {
+    font-family: var(--font-family-2);
+    font-size: 14px;
+    line-height: 1.5em;
+    color: var(--accent-color-7, #D0D0D0);
+    margin: 0;
+}
+
+/* Contact section email link — keep it on-brand, not a default blue link */
+.contact-email-link {
+    color: var(--primary, #fff);
+    transition: color 300ms ease;
+}
+
+.contact-email-link:hover {
+    color: var(--accent-color);
+}
+
+/* Work-setup photo card — matches the site's signature diagonal-corner
+   radius (see .partners-container / .contact-cta-banner in main.css)
+   plus the same red-glow shadow language used on the Featured Work cards. */
+.core-service-photo {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 50px 0px 50px 0px;
+    box-shadow: 0 30px 60px -20px rgba(0,0,0,0.65), 0 0 40px -12px rgba(229, 9, 20, 0.3);
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
+/* Responsive grid breakpoints */
+@media (max-width: 991px) {
+    .fw-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 575px) {
+    .fw-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    .fw-card--horizontal {
+        grid-column: span 1;
+    }
+    .fw-title {
+        font-size: 19px;
+    }
+}
+
+/* Respect reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+    .fw-card,
+    .fw-controls,
+    .fw-play-overlay,
+    .fw-play-overlay i {
+        transition: none !important;
+        transform: none !important;
+    }
+    .fw-card {
+        opacity: 1;
+    }
+}
